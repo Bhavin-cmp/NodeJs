@@ -1,33 +1,21 @@
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
+import express from "express";
+const app = express();
+const port = 8080;
 
-const __fileName = fileURLToPath(import.meta.url);
-const __dirName = path.dirname(__fileName);
+const reqFilter = (req, res, next) => {
+  if (!req.query.age) {
+    res.send("Please Provide Age");
+  } else if (req.query.age < 18) {
+    res.send(
+      "You can not access your age it below 18 to access you shoud be 18 or above"
+    );
+  } else {
+    next();
+  }
+};
+app.use(reqFilter);
+app.get("/", (req, res) => res.send("Hello World!"));
 
-const dirPath = path.join(__dirName, "crud");
-const filePath = `${dirPath}/test.txt`;
+app.get("/about", (req, res) => res.send("About Page!"));
 
-//! Creating File
-fs.writeFileSync(filePath, "Hello Bhavin Patel");
-
-//!  Read File
-fs.readFile(filePath, "utf-8", (err, item) => {
-  console.log("first", item);
-});
-
-//!Update File
-
-/* fs.appendFile(filePath, "I am a full stack developer", (err) => {
-  if(!err) console.log(" File is updated");
-}); */
-
-//! Reanem file
-
-/* fs.rename(filePath, `${dirPath}/Hello.txt`, (err) => {
-  if (!err) console.log(" File is Name is Changed");
-}); */
-
-//! Delete File
-
-fs.unlinkSync(`${dirPath}/test.txt`);
+app.listen(port, () => console.log(`Example app listening on port ${port}!`));
